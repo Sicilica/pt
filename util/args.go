@@ -16,6 +16,10 @@ var userInputTimeOffsetComponents = []time.Duration{
 }
 var userInputTimeOffsetRegexp = regexp.MustCompile(`^(?:(\d+)d)?(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$`)
 
+var userInputDateRegexp = regexp.MustCompile(`^(\d{4})-(\d{2})-(\d{2})$`)
+
+var userInputTimeRegexp = regexp.MustCompile(`^(\d{2}):(\d{2})$`)
+
 type ArgsQueue struct {
 	args []string
 }
@@ -94,7 +98,49 @@ func (q *ArgsQueue) PopTime(referenceTime time.Time, positiveOffsets bool) (time
 		return referenceTime.Add(-o), err
 	}
 
-	return time.Time{}, errors.New("failed to parse command args")
+	// Attempt to parse as absolute time
+	var absTime time.Time
+	// Get date from input or assume from reference time
+	m = userInputDateRegexp.FindStringSubmatch(s)
+	if m != nil {
+		y, err := strconv.Atoi(m[1])
+		if err != nil {
+			return time.Time{}, errors.New("malformed date")
+		}
+		month, err := strconv.Atoi(m[2])
+		if err != nil {
+			return time.Time{}, errors.New("malformed date")
+		}
+		d, err := strconv.Atoi(m[3])
+		if err != nil {
+			return time.Time{}, errors.New("malformed date")
+		}
+		absTime = time.Date(y, time.Month(month), d, 0, 0, 0, 0, time.Local)
+
+		s, err = q.Pop()
+		if err != nil {
+			return time.Time{}, err
+		}
+	} else {
+		y, m, d := referenceTime.Local().Date()
+		absTime = time.Date(y, m, d, 0, 0, 0, 0, time.Local)
+	}
+	// Get time
+	m = userInputTimeRegexp.FindStringSubmatch(s)
+	if m == nil {
+		return time.Time{}, errors.New("failed to parse command args")
+	}
+	h, err := strconv.Atoi(m[1])
+	if err != nil {
+		return time.Time{}, errors.New("malformed time")
+	}
+	minute, err := strconv.Atoi(m[2])
+	if err != nil {
+		return time.Time{}, errors.New("malformed time")
+	}
+	absTime = absTime.Add(time.Hour * time.Duration(h) + time.Minute * time.Duration(minute))
+	finalArgs = q.args
+	return absTime, nil
 }
 
 func (q *ArgsQueue) Rest() []string {
