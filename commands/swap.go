@@ -57,7 +57,7 @@ func commandSwap(c types.CommandContext) error {
 	}
 
 	// Now we essentially do a normal "resume" call...
-	prevT, err := mustCloseExistingTask(c)
+	prevT, err := mustCloseExistingTask(c, time.Now())
 	if err != nil {
 		return err
 	}

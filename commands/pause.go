@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/pkg/errors"
 
@@ -18,7 +19,7 @@ func commandPause(c types.CommandContext) error {
 		return err
 	}
 
-	t, err := mustCloseExistingTask(c)
+	t, err := mustCloseExistingTask(c, time.Now())
 	if err != nil {
 		return err
 	}
