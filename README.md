@@ -225,6 +225,14 @@ pt restore
 pt restore 001
 ```
 
+Or, if you prefer to manage the backup files yourself:
+```sh
+# Save backup to "backup.db" in the current directory
+pt export backup.db
+# Restore from "backup.db"
+pt import backup.db
+```
+
 Normally, all data is stored locally, but you can optionally use a cloud provider to either store remote backups or sync data across multiple devices.
 The only currently supported cloud provider is Dropbox.
 
