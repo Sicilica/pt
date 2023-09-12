@@ -231,7 +231,7 @@ The only currently supported cloud provider is Dropbox.
 **Warning:** All of the cloud sync functionality is relatively unsafe, in that it's highly likely to just blow away your data.
 I _highly_ recommend making a local backup (e.g. with `pt backup`) before you `pt sync` each time!
 
-### Dropbox
+#### Dropbox
 
 Currently, syncing with Dropbox requires you to manually configure everything.
 
