@@ -1,13 +1,13 @@
 package sqlite3
 
-func (s sqlite3Session) TagHasAncestor(child, parent string) (bool, error) {
-	stmt, err := s.tx.Prepare("WITH tag_tree AS (SELECT * FROM tag_parents WHERE parent=? UNION ALL SELECT a.* FROM tag_parents a JOIN tag_tree ON a.parent=tag_tree.tag) SELECT * FROM tag_tree WHERE tag=?")
+func (s sqlite3Session) TagHasAncestor(child, ancestor string) (bool, error) {
+	stmt, err := s.tx.Prepare("SELECT 1 FROM tag_parents_lookup WHERE tag=? AND ancestor=?")
 	if err != nil {
 		return false, err
 	}
 	defer stmt.Close()
 
-	rows, err := stmt.Query(parent, child)
+	rows, err := stmt.Query(child, ancestor)
 	if err != nil {
 		return false, err
 	}

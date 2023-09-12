@@ -22,12 +22,8 @@ func (s sqlite3Session) QueryTasks(start time.Time, end time.Time, q *types.Quer
 		}
 	} else {
 		stmt, err := s.tx.Prepare(`
-			WITH tag_tree AS (
-				SELECT * FROM tag_parents WHERE parent=?
-				UNION ALL
-				SELECT a.* FROM tag_parents a JOIN tag_tree ON a.parent=tag_tree.tag
-			), tags AS (
-				SELECT tag FROM tag_tree
+			WITH tags AS (
+				SELECT tag FROM tag_parents_lookup WHERE ancestor=?
 				UNION ALL
 				SELECT ? tag
 			)

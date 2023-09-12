@@ -45,9 +45,9 @@ PRIMARY KEY (task_id, tag)
 		`CREATE TABLE tag_parents_lookup (
 	tag TEXT NOT NULL,
 	ancestor TEXT NOT NULL,
-	depth TINYINT NOT NULL
+	depth TINYINT NOT NULL,
+	PRIMARY KEY (tag, ancestor)
 	);`,
-		"CREATE UNIQUE INDEX tag_parents_lookup_tag_ancestor_idx ON tag_parents_lookup (tag, ancestor);",
 		"CREATE INDEX tag_parents_lookup_tag_idx ON tag_parents_lookup (tag);",
 		"CREATE INDEX tag_parents_lookup_ancestor_idx ON tag_parents_lookup (ancestor);",
 		"CREATE INDEX tag_parents_lookup_depth_idx ON tag_parents_lookup (depth);",

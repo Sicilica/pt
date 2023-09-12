@@ -12,5 +12,5 @@ func (s sqlite3Session) ClearTagParent(tag string) error {
 		return err
 	}
 
-	return nil
+	return s.rebuildTagParentsLookup()
 }
