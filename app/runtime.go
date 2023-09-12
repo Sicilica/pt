@@ -12,6 +12,7 @@ type Runtime struct {
 	NewStorageProvider   func() (types.StorageProvider, error)
 	NewCloudSyncProvider func() (types.CloudSyncProvider, error)
 
+	execDepth int
 	storageProvider types.StorageProvider
 }
 
@@ -44,7 +45,9 @@ func (r *Runtime) ExecCommand(args []string) error {
 		return errors.Errorf("unrecognized command \"%s\"", cmdName)
 	}
 
+	r.execDepth++
 	err = cmd(c)
+	r.execDepth--
 	if err != nil {
 		return err
 	}

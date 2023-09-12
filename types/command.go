@@ -9,6 +9,7 @@ import (
 type CommandContext interface {
 	Args() *util.ArgsQueue
 	CloseStorage() error
+	DisallowNesting() error
 	ExecCommand(args []string) error
 	PT() StorageInterface
 	WithCloudSync(fn func(cloud CloudSyncInterface) error) error

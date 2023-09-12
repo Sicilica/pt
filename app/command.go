@@ -43,6 +43,13 @@ func (c *commandContext) CloseStorage() error {
 	return nil
 }
 
+func (c *commandContext) DisallowNesting() error {
+	if c.runtime.execDepth > 1 {
+		return errors.New("command cannot be executed in interactive mode")
+	}
+	return nil
+}
+
 func (c *commandContext) ExecCommand(args []string) error {
 	if c.storageSession != nil {
 		return errors.New("command has a storage session and cannot spawn children")

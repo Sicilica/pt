@@ -14,6 +14,10 @@ func init() {
 }
 
 func commandI(c types.CommandContext) error {
+	if err := c.DisallowNesting(); err != nil {
+		return err
+	}
+
 	if err := c.Args().MustBeEmpty(); err != nil {
 		return err
 	}
