@@ -237,7 +237,7 @@ Currently, syncing with Dropbox requires you to manually configure everything.
 
 1. Open up the [Dropbox developer dashboard](https://www.dropbox.com/developers/apps/).
 
-2. Create a new app for pt (with a name that you'll be able to remember).
+2. Create a new app for pt (with a name that you'll be able to recognize).
 
 3. On the app details page, scroll down to "OAuth 2 > Generated access token". Click the button to generate an access token.
 
