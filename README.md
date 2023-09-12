@@ -58,6 +58,28 @@ pt summary this month meeting
 
 That's it! For a full list of commands, use `pt help`, or you can keep reading to learn about some of the more powerful things you can do.
 
+## Time Formats
+
+Several commands take a time as input. All of the following patterns are currently recognized:
+
+- An exact offset:
+  - `Nd` - N days ago (e.g. `1d`, `2d`)
+  - `Nh` - N hours ago (e.g. `1h`)
+  - `Nm` - N minutes ago (e.g. `5m`)
+  - `Ns` - N seconds ago (e.g. `30s`, `90s`)
+  - Any combination of the above (e.g., `2h5m`, `1d12h30m`, `1m30s`)
+- A time, of the form `HH:mm`. This is assumed to be the most recent occurrence of that time. For example, if it's currently 14:00, then:
+  - `13:00` would be 1 hour ago
+  - `15:00` would be 23 hours ago
+- A precise date and time, of the form `YYYY-MM-DD HH:mm`.
+  - Example: `2021-02-25 11:57`
+
+Some other commands take an entire period of time, instead of just a single instant (most importantly, `pt summary`).
+For these commands, currently only the following inputs are supported:
+- `today`
+- `yesterday`
+- `(last/this) (week/month/quarter/year)`
+
 ## Advanced Usage
 
 ### Forgetting to Clock In
