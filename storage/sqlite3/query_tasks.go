@@ -16,7 +16,7 @@ func (s sqlite3Session) QueryTasks(start time.Time, end time.Time, q *types.Quer
 			return nil, err
 		}
 		defer stmt.Close()
-		rows, err = stmt.Query(start, end)
+		rows, err = stmt.Query(dbtime(start), dbtime(end))
 		if err != nil {
 			return nil, err
 		}

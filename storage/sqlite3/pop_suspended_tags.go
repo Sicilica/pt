@@ -10,7 +10,7 @@ import (
 func (s sqlite3Session) PopSuspendedTags(offset int) ([]string, error) {
 	var id string
 	var tags string
-	stmt, err := s.tx.Prepare("SELECT id, tags FROM suspension_records ORDER BY created_at DESC LIMIT 1 OFFSET ?")
+	stmt, err := s.tx.Prepare("SELECT id, tags FROM suspension_records ORDER BY created_at DESC, id DESCC LIMIT 1 OFFSET ?")
 	if err != nil {
 		return nil, err
 	}

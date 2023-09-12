@@ -14,7 +14,7 @@ func (s sqlite3Session) CreateTask(start time.Time) (*types.Task, error) {
 	}
 	defer stmt.Close()
 
-	r, err := stmt.Exec(start)
+	r, err := stmt.Exec(dbtime(start))
 	if err != nil {
 		return nil, err
 	}

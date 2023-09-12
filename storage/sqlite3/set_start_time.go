@@ -13,7 +13,7 @@ func (s sqlite3Session) SetStartTime(t *types.Task, start time.Time) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(start, t.ID)
+	_, err = stmt.Exec(dbtime(start), t.ID)
 	if err != nil {
 		return err
 	}

@@ -35,19 +35,19 @@ If you ever forget what you were working on, use `pt status`:
 ```sh
 # What task is active right now?
 pt status
-> doing [bug-123] for 5m since 10:20
+# doing [bug-123] for 5m since 10:20
 ```
 
 Later, you can use `pt summary` to recall your tracked tasks:
 ```sh
 # List today's recorded tasks
 pt summary today
-> 8:30 - 10m [email]
-> 8:40 - 1h15m [bug-123]
-> 9:55 - 20m [meeting]
-> 10:15 - 1h [bug-123]
-> -----
-> total: 2h45m
+# 8:30 - 10m [email]
+# 8:40 - 1h15m [bug-123]
+# 9:55 - 20m [meeting]
+# 10:15 - 1h [bug-123]
+# -----
+# total: 2h45m
 
 # List tasks for the whole week
 pt summary this week

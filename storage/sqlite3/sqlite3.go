@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"os"
 	"path"
+	"time"
 
 	// Package for sqlite3 support
 	_ "github.com/mattn/go-sqlite3"
@@ -74,4 +75,8 @@ func (s *sqlite3Session) Abort() error {
 
 func (s *sqlite3Session) Commit() error {
 	return s.tx.Commit()
+}
+
+func dbtime(t time.Time) string {
+	return t.UTC().Format("2006-01-02 15:04:05.999")
 }
