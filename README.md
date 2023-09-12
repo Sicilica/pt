@@ -213,7 +213,48 @@ pt drop 1
 
 ### Backup and Sync
 
-TODO...
+You can create and restore local backups, optionally giving them names:
+```sh
+# Save to the default backup
+pt backup
+# Save to a named backup
+pt backup 001
+# Restore the default backup
+pt restore
+# Restore a named backup
+pt restore 001
+```
+
+Normally, all data is stored locally, but you can optionally use a cloud provider to either store remote backups or sync data across multiple devices.
+The only currently supported cloud provider is Dropbox.
+
+**Warning:** All of the cloud sync functionality is relatively unsafe, in that it's highly likely to just blow away your data.
+I _highly_ recommend making a local backup (e.g. with `pt backup`) before you `pt sync` each time!
+
+### Dropbox
+
+Currently, syncing with Dropbox requires you to manually configure everything.
+
+1. Open up the [Dropbox developer dashboard](https://www.dropbox.com/developers/apps/).
+
+2. Create a new app for pt (with a name that you'll be able to remember).
+
+3. On the app details page, scroll down to "OAuth 2 > Generated access token". Click the button to generate an access token.
+
+4. Create a new file called `dropbox_config.json` wherever pt's application data is stored on your system (probably `~/.config/sicilica/pt`, or `C:\Users\Sicilica\AppData\Local\sicilica\pt`, or `~/Library/Application Support/sicilica/pt`).
+
+5. In this file, write the following, pasting the token you generated:
+```json
+{
+  "access_token": "YOUR_ACCESS_TOKEN_HERE"
+}
+```
+
+6. (Optional) If you want, you can also supply your own `"encryption_key"`. Otherwise, one will be automatically generated for you in the next step.
+
+7. Now, just run `pt sync` any time you want to sync your data!
+
+8. (Optional) To sync multiple devices, copy the entire `dropbox_config.json` to any other device you want to sync with. Note that just copying the `access_token` again isn't enough; you also need the `encryption_key` which should now also be in that same file.
 
 ## Some Personal Observations
 
