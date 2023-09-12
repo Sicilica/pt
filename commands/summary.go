@@ -30,6 +30,9 @@ func commandSummary(c types.CommandContext) error {
 		return err
 	}
 
+	fmt.Printf("Tasks %s to %s\n", tp.Start.Format(time.DateTime), tp.End.Format(time.DateTime))
+	fmt.Println("-----")
+
 	var total time.Duration
 	for _, t := range tasks {
 		d := t.Stop.Sub(t.Start)
@@ -73,7 +76,7 @@ var timePeriodParseRules = map[string]func(c types.CommandContext) (*timePeriod,
 		case "week":
 			y, m, d := time.Now().Local().Date()
 			today := time.Date(y, m, d, 0, 0, 0, 0, time.Local)
-			end := today.Add(time.Duration(int(today.Weekday())) * -24 * time.Hour)
+			end := today.Add(time.Duration(today.Weekday()) * -24 * time.Hour)
 			return &timePeriod{
 				Start: end.Add(-7 * 24 * time.Hour),
 				End:   end,
@@ -110,7 +113,7 @@ var timePeriodParseRules = map[string]func(c types.CommandContext) (*timePeriod,
 		case "week":
 			y, m, d := time.Now().Local().Date()
 			today := time.Date(y, m, d, 0, 0, 0, 0, time.Local)
-			start := today.Add(time.Duration(int(today.Weekday())) * -24 * time.Hour)
+			start := today.Add(time.Duration(today.Weekday()) * -24 * time.Hour)
 			return &timePeriod{
 				Start: start,
 				End:   start.Add(7 * 24 * time.Hour),
@@ -132,6 +135,45 @@ var timePeriodParseRules = map[string]func(c types.CommandContext) (*timePeriod,
 			return &timePeriod{
 				Start: time.Date(y, 1, 1, 0, 0, 0, 0, time.Local),
 				End:   time.Date(y+1, 1, 1, 0, 0, 0, 0, time.Local),
+			}, nil
+		default:
+			return nil, errors.Errorf("unrecognized time period \"%s\"", nextArg)
+		}
+	},
+	"past": func(c types.CommandContext) (*timePeriod, error) {
+		nextArg, err := c.Args().Pop()
+		if err != nil {
+			return nil, err
+		}
+
+		switch nextArg {
+		case "week":
+			y, m, d := time.Now().Local().Date()
+			today := time.Date(y, m, d, 0, 0, 0, 0, time.Local)
+			return &timePeriod{
+				Start: today.Add(-6 * 24 * time.Hour),
+				End:   today.Add(24 * time.Hour),
+			}, nil
+		case "month":
+			y, m, d := time.Now().Local().Date()
+			today := time.Date(y, m, d, 0, 0, 0, 0, time.Local)
+			return &timePeriod{
+				Start: today.Add(-30 * 24 * time.Hour),
+				End:   today.Add(24 * time.Hour),
+			}, nil
+		case "quarter":
+			y, m, d := time.Now().Local().Date()
+			today := time.Date(y, m, d, 0, 0, 0, 0, time.Local)
+			return &timePeriod{
+				Start: today.Add(-90 * 24 * time.Hour),
+				End:   today.Add(24 * time.Hour),
+			}, nil
+		case "year":
+			y, m, d := time.Now().Local().Date()
+			today := time.Date(y, m, d, 0, 0, 0, 0, time.Local)
+			return &timePeriod{
+				Start: today.Add(-365 * 24 * time.Hour),
+				End:   today.Add(24 * time.Hour),
 			}, nil
 		default:
 			return nil, errors.Errorf("unrecognized time period \"%s\"", nextArg)
