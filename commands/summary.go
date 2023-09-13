@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"slices"
 	"time"
 
 	"github.com/pkg/errors"
@@ -30,12 +31,21 @@ func commandSummary(c types.CommandContext) error {
 		return err
 	}
 
-	fmt.Printf("Tasks %s to %s\n", tp.Start.Format(time.DateTime), tp.End.Format(time.DateTime))
+	fmt.Printf("Tasks %s to %s\n", tp.Start.Format(time.DateOnly), tp.End.Format(time.DateOnly))
 	fmt.Println("-----")
 
 	var total time.Duration
+	tagTimes := make(map[string]time.Duration)
 	for _, t := range tasks {
-		d := t.Stop.Sub(t.Start)
+		start := t.Start
+		stop := t.Stop
+		if start.Before(tp.Start) {
+			start = tp.Start
+		}
+		if stop.After(tp.End) {
+			stop = tp.End
+		}
+		d := stop.Sub(start)
 		total += d
 
 		tags, err := c.PT().GetTaskTags(t)
@@ -43,11 +53,92 @@ func commandSummary(c types.CommandContext) error {
 			return err
 		}
 
+		for _, tag := range tags {
+			tagTimes[tag] += d
+		}
+
 		fmt.Printf("%s - %s %s\n", formatTime(t.Start), formatDuration(d), formatTags(tags))
 	}
 
 	fmt.Println("-----")
+	untracked := tp.End.Sub(tp.Start) - total
+	if tp.End.After(time.Now()) {
+		untracked = time.Since(tp.Start) - total
+	}
 	fmt.Println("total:", formatDuration(total))
+	if untracked > 0 {
+		fmt.Printf("untracked: %s (%.0f%%)\n", formatDuration(untracked), 100*(float64(untracked)/float64(untracked+total)))
+	}
+
+	// Fetch all relevant tags and their parents
+	tags := make([]string, 0, len(tagTimes))
+	for t := range tagTimes {
+		tags = append(tags, t)
+	}
+	tagParents := make(map[string]string)
+	for len(tags) > 0 {
+		t := tags[len(tags)-1]
+		tags = tags[:len(tags)-1]
+
+		if _, ok := tagParents[t]; ok {
+			continue
+		}
+
+		p, err := c.PT().GetTagParent(t)
+		if err != nil && err != types.ErrNoParent {
+			return err
+		}
+		tagParents[t] = p
+		if p != "" {
+			tags = append(tags, p)
+		}
+	}
+
+	// Aggregate everything
+	tagTree := make(map[string][]string)
+	for t, p := range tagParents {
+		tagTree[p] = append(tagTree[p], t)
+	}
+	var addTagTimes func(string)
+	addTagTimes = func(t string) {
+		for _, c := range tagTree[t] {
+			addTagTimes(c)
+			tagTimes[t] += tagTimes[c]
+		}
+	}
+	addTagTimes("")
+
+	// And print
+	fmt.Println("")
+	fmt.Println("breakdown")
+	fmt.Println("-----")
+	if _, ok := tagTimes["(untracked)"]; !ok {
+		tagTimes["(untracked)"] = untracked
+		tagTree[""] = append(tagTree[""], "(untracked)")
+	}
+	var printTag func(string, string)
+	printTag = func(t, prefix string) {
+		if t != "" {
+			fmt.Printf("%s%s %s\n", prefix, t, formatDuration(tagTimes[t]))
+			prefix += "| "
+		}
+
+		slices.SortFunc(tagTree[t], func(a, b string) int {
+			d := tagTimes[b] - tagTimes[a]
+			if d > 0 {
+				return 1
+			}
+			if d < 0 {
+				return -1
+			}
+			return 0
+		})
+
+		for _, c := range tagTree[t] {
+			printTag(c, prefix)
+		}
+	}
+	printTag("", "")
 
 	return nil
 }
