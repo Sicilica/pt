@@ -5,12 +5,16 @@ import (
 	"os"
 
 	"github.com/blend/go-sdk/crypto"
-	"github.com/dropbox/dropbox-sdk-go-unofficial/dropbox/files"
+	"github.com/dropbox/dropbox-sdk-go-unofficial/v6/dropbox/files"
 	"github.com/pkg/errors"
 )
 
 func (d *dropboxCloudSyncProvider) Download() error {
-	_, contents, err := files.New(d.cfg).Download(files.NewDownloadArg(d.remoteFile))
+	cfg, err := d.Config()
+	if err != nil {
+		return err
+	}
+	_, contents, err := files.New(cfg).Download(files.NewDownloadArg(d.remoteFile))
 	if err != nil {
 		return errors.Wrap(err, "failed to download file")
 	}

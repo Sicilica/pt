@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/blend/go-sdk/crypto"
-	"github.com/dropbox/dropbox-sdk-go-unofficial/dropbox"
-	"github.com/dropbox/dropbox-sdk-go-unofficial/dropbox/files"
+	"github.com/dropbox/dropbox-sdk-go-unofficial/v6/dropbox"
+	"github.com/dropbox/dropbox-sdk-go-unofficial/v6/dropbox/files"
 	"github.com/pkg/errors"
 
 	"github.com/sicilica/pt/cloud/dropbox/modifications"
@@ -25,6 +25,11 @@ func (d *dropboxCloudSyncProvider) Upload() error {
 	}
 	defer f.Close()
 
+	cfg, err := d.Config()
+	if err != nil {
+		return err
+	}
+
 	enc, err := crypto.NewStreamEncrypter(d.aesKey, f)
 	if err != nil {
 		return errors.Wrap(err, "failed to open encrypter")
@@ -40,12 +45,14 @@ func (d *dropboxCloudSyncProvider) Upload() error {
 		enc,
 	)
 
-	dbx := dropbox.NewContext(d.cfg)
-	_, err = modifications.FixedUpload(&dbx, &files.CommitInfo{
+	modTime := info.ModTime()
+
+	dbx := dropbox.NewContext(cfg)
+	err = modifications.FixedUpload(&dbx, &files.CommitInfo{
 		Path:           d.remoteFile,
 		Mode:           &files.WriteMode{Tagged: dropbox.Tagged{Tag: "overwrite"}},
 		Mute:           true,
-		ClientModified: info.ModTime(),
+		ClientModified: &modTime,
 	}, contents)
 	if err != nil {
 		return errors.Wrap(err, "failed to upload file")

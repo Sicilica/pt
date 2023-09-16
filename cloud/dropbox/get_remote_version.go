@@ -1,14 +1,18 @@
 package dropbox
 
 import (
-	"github.com/dropbox/dropbox-sdk-go-unofficial/dropbox/files"
+	"github.com/dropbox/dropbox-sdk-go-unofficial/v6/dropbox/files"
 	"github.com/pkg/errors"
 
 	"github.com/sicilica/pt/types"
 )
 
 func (d *dropboxCloudSyncProvider) GetRemoteVersion() (types.BackupVersionInfo, error) {
-	res, err := files.New(d.cfg).GetMetadata(files.NewGetMetadataArg(d.remoteFile))
+	cfg, err := d.Config()
+	if err != nil {
+		return types.BackupVersionInfo{}, err
+	}
+	res, err := files.New(cfg).GetMetadata(files.NewGetMetadataArg(d.remoteFile))
 	if err != nil {
 		if gma, ok := err.(files.GetMetadataAPIError); ok {
 			if gma.EndpointError.Path.Tag == "not_found" {

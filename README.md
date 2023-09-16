@@ -248,28 +248,48 @@ I _highly_ recommend making a local backup (e.g. with `pt backup`) before you `p
 
 #### Dropbox
 
-Currently, syncing with Dropbox requires you to manually configure everything.
+Your cloud data will be stored by the `sicilica-pt` Dropbox app, and encrypted with a personal key that will be stored locally on your computer.
+If you want to use your own app, or if you want to manually supply your own encryption key, see the manual setup instructions below.
+
+To backup your data to Dropbox, you only need to run the `pt sync` command:
+```sh
+# Save local version to cloud or download remote version from cloud, depending on which version is newer.
+pt sync
+```
+
+The first time you run this command, you'll be prompted to complete the OAuth flow.
+Also, an encryption key unique to you will be generated automatically and stored locally.
+
+##### Syncing Across Multiple Devices
+
+If you want to use `pt` to sync data across multiple devices, you need to do some manual configuration in order to share your encryption key:
+
+1. Setup cloud sync on your first device.
+
+2. On the first device, look for a file called `dropbox_config.json` in the directory where pt stores application data on your system (probably `~/.config/sicilica/pt`, or `C:\Users\Sicilica\AppData\Local\sicilica\pt`, or `~/Library/Application Support/sicilica/pt`).
+
+3. Copy the entire `dropbox_config.json` file to the matching location on your other device.
+
+##### Using a Custom App
+
+If the default Dropbox app doesn't work for you, you can create your own and configure it as follows:
 
 1. Open up the [Dropbox developer dashboard](https://www.dropbox.com/developers/apps/).
 
 2. Create a new app for pt (with a name that you'll be able to recognize).
 
-3. On the app details page, scroll down to "OAuth 2 > Generated access token". Click the button to generate an access token.
+3. On the app details page, scroll down to find your "App key". Copy this value.
 
 4. Create a new file called `dropbox_config.json` wherever pt's application data is stored on your system (probably `~/.config/sicilica/pt`, or `C:\Users\Sicilica\AppData\Local\sicilica\pt`, or `~/Library/Application Support/sicilica/pt`).
 
 5. In this file, write the following, pasting the token you generated:
 ```json
 {
-  "access_token": "YOUR_ACCESS_TOKEN_HERE"
+  "client_id": "YOUR_DROPBOX_APP_KEY"
 }
 ```
 
-6. (Optional) If you want, you can also supply your own `"encryption_key"`. Otherwise, one will be automatically generated for you in the next step.
-
-7. Now, just run `pt sync` any time you want to sync your data!
-
-8. (Optional) To sync multiple devices, copy the entire `dropbox_config.json` to any other device you want to sync with. Note that just copying the `access_token` again isn't enough; you also need the `encryption_key` which should now also be in that same file.
+6. (Optional) If you want, you can also supply your own `"encryption_key"`. Otherwise, one will be automatically generated for you when you run `pt sync`.
 
 ## Some Personal Observations
 
