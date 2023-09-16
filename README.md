@@ -4,11 +4,13 @@
 
 1. Make sure you have Go installed.
 
-2. Add the `bin/` directory in this repo to your `PATH`.
+2. Clone the repo.
+
+3. Add the `bin/` directory in this repo to your `PATH`.
     - Remember to `source` or restart your shell
     - (Theoretically you can symlink `pt` instead or do whatever else you prefer, but `pt update` probably won't work correctly; if someone wants to rework the `pt update` code for a more sane installation method be my guest)
 
-3. Run `make`.
+4. Run `make`.
 
 That's it!
 
