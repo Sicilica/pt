@@ -24,7 +24,7 @@ To start a new task, just use `pt in` with some tags that describe what you're d
 pt in slack
 # Starts a task with tags "cooking" and "lunch"
 pt in cooking lunch
-#  Starts a wask with tag "bug-123"
+#  Starts a task with tag "bug-123"
 pt in bug-123
 ```
 
